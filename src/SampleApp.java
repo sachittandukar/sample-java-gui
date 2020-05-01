@@ -11,6 +11,7 @@ public class SampleApp extends JFrame {
     JPanel dataPanel;
     JPanel buttonPanel;
     JPanel secondPanel;
+    // Reference variable for different fields, buttons, table and table model
     DefaultTableModel model;
     JTable table;
     JTextField txtName, txtAddress;
@@ -19,6 +20,9 @@ public class SampleApp extends JFrame {
     JCheckBox chkPositive;
     JButton btnSave, btnUpdate, btnDelete, btnClear;
 
+    /**
+     * Constructor of the class
+     */
     public SampleApp() {
         setTitle("Sample App");
         setVisible(true);
@@ -35,20 +39,30 @@ public class SampleApp extends JFrame {
         setLocationRelativeTo(null);
     }
 
+    /**
+     * This method is used for creating menus in the GUI.
+     * You must call this method in constructor inside setJMenuBar() to display in menu in the frame.
+     *
+     * @return list of menus
+     */
     private JMenuBar getMenu() {
         menuBar = new JMenuBar();
 
+        // define top level menu
         JMenu fileMenu = new JMenu("File");
         JMenu editMenu = new JMenu("Edit");
         JMenu viewMenu = new JMenu("View");
 
+        // creating sub menu
         JMenuItem newItem = new JMenuItem("New");
         JMenuItem exitItem = new JMenuItem("Exit");
 
+        // sub menu added inside file menu
         fileMenu.add(newItem);
         fileMenu.addSeparator();
         fileMenu.add(exitItem);
 
+        // top level menu added inside menu bar
         menuBar.add(fileMenu);
         menuBar.add(editMenu);
         menuBar.add(viewMenu);
@@ -56,6 +70,11 @@ public class SampleApp extends JFrame {
         return menuBar;
     }
 
+    /**
+     * This method defines interface for data entry section
+     *
+     * @return panel for data entry section
+     */
     private JPanel dataUI() {
         dataPanel = new JPanel();
         dataPanel.setLayout(new GridBagLayout());
@@ -74,7 +93,6 @@ public class SampleApp extends JFrame {
         gbc.gridx = 0;
         gbc.gridy = 2;
         dataPanel.add(new JLabel("Gender"), gbc);
-
         gbc.gridx = 0;
         gbc.gridy = 3;
         dataPanel.add(new JLabel("Positive"), gbc);
@@ -84,16 +102,16 @@ public class SampleApp extends JFrame {
         txtName = new JTextField(20);
         dataPanel.add(txtName, gbc);
 
-
         gbc.gridx = 1;
         gbc.gridy = 1;
         txtAddress = new JTextField(20);
         dataPanel.add(txtAddress, gbc);
 
-
+        // Created new panel to add both radio button at same place
         JPanel radioPanel = new JPanel(new FlowLayout(FlowLayout.LEADING));
         rdMale = new JRadioButton("Male");
         rdFemale = new JRadioButton("Female");
+        // added radio button inside button group so that one radio button is selected at a time
         bgGroup = new ButtonGroup();
         bgGroup.add(rdMale);
         bgGroup.add(rdFemale);
@@ -103,7 +121,6 @@ public class SampleApp extends JFrame {
         gbc.gridy = 2;
         dataPanel.add(radioPanel, gbc);
 
-
         gbc.gridx = 1;
         gbc.gridy = 3;
         chkPositive = new JCheckBox();
@@ -112,6 +129,11 @@ public class SampleApp extends JFrame {
         return dataPanel;
     }
 
+    /**
+     * This method defines interface for button functionality section
+     *
+     * @return panel for button functionality section
+     */
     private JPanel buttonUI() {
         buttonPanel = new JPanel(new GridLayout(2, 2));
         buttonPanel.setBorder(BorderFactory.createTitledBorder("Buttons Functionality"));
@@ -142,6 +164,7 @@ public class SampleApp extends JFrame {
                 }
             }
         });
+
         btnClear.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -197,19 +220,29 @@ public class SampleApp extends JFrame {
         return buttonPanel;
     }
 
+    /**
+     * This method defines interface for list of data section
+     * and event listener for row selection
+     *
+     * @return panel for list of data
+     */
     private JPanel secondUI() {
         secondPanel = new JPanel(new BorderLayout());
-        secondPanel.setBorder(BorderFactory.createTitledBorder("Second Panel"));
+        secondPanel.setBorder(BorderFactory.createTitledBorder("List of data"));
         model = new DefaultTableModel();
         model.setColumnIdentifiers(new String[]{"Name", "Address", "Gender", "COVID-19"});
         table = new JTable(model);
         JScrollPane scrollPane = new JScrollPane(table);
         secondPanel.add(scrollPane);
 
+        // added event listener for row selection inside JTable
         table.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
+                // returns row number of selected row in JTable
                 int selectedRow = table.getSelectedRow();
+                // model.getValueAt(selectedRow, 0) returns a value for the cell at the given row and column
+                // .toString() returns string representation of the object
                 txtName.setText(model.getValueAt(selectedRow, 0).toString());
                 txtAddress.setText(model.getValueAt(selectedRow, 1).toString());
                 rdMale.setSelected(model.getValueAt(selectedRow, 2).toString().equals("Male"));
@@ -240,6 +273,11 @@ public class SampleApp extends JFrame {
         return secondPanel;
     }
 
+    /**
+     * Entry point of the application
+     *
+     * @param args
+     */
     public static void main(String[] args) {
         new SampleApp();
     }
