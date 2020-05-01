@@ -127,11 +127,18 @@ public class SampleApp extends JFrame {
         btnDelete.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                String row = JOptionPane.showInputDialog(buttonPanel, "Please enter row number to delete?", "Queries", JOptionPane.INFORMATION_MESSAGE);
+                String row = JOptionPane.showInputDialog(buttonPanel, "Please enter row number to delete?", "Queries", JOptionPane.QUESTION_MESSAGE);
                 int confirm = JOptionPane.showConfirmDialog(buttonPanel, "Are you sure want to delete row?", "Warning", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
                 if (confirm == JOptionPane.YES_OPTION) {
-                    int rowDelete = Integer.parseInt(row);
-                    model.removeRow(rowDelete - 1);
+                    try {
+                        int rowDelete = Integer.parseInt(row);
+                        model.removeRow(rowDelete - 1);
+                    } catch (NumberFormatException exception) {
+                        JOptionPane.showMessageDialog(buttonPanel, "You must enter valid number.", "Error", JOptionPane.ERROR_MESSAGE);
+                    } catch (ArrayIndexOutOfBoundsException exception) {
+                        JOptionPane.showMessageDialog(buttonPanel, "Provided row doesn't exist. Please enter valid row number.", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+
                 }
             }
         });
@@ -155,9 +162,14 @@ public class SampleApp extends JFrame {
                 String address = txtAddress.getText().trim();
                 String gender = rdMale.isSelected() ? "Male" : "Female";
                 String positive = chkPositive.isSelected() ? "Positive" : "Negative";
+                if (name.isEmpty() || address.isEmpty()) {
+                    JOptionPane.showMessageDialog(buttonPanel, "Some of the fields are empty", "Error", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    model.addRow(new String[]{name, address, gender, positive});
+                    btnClear.doClick();
+                    JOptionPane.showMessageDialog(buttonPanel, "New record is added successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+                }
 
-                model.addRow(new String[]{name, address, gender, positive});
-                btnClear.doClick();
             }
         });
 
@@ -165,16 +177,20 @@ public class SampleApp extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int selectedRow = table.getSelectedRow();
-                String name = txtName.getText();
-                String address = txtAddress.getText();
+                String name = txtName.getText().trim();
+                String address = txtAddress.getText().trim();
                 String gender = rdMale.isSelected() ? "Male" : "Female";
                 String positive = chkPositive.isSelected() ? "Positive" : "Negative";
-
-                model.setValueAt(name, selectedRow, 0);
-                model.setValueAt(address, selectedRow, 1);
-                model.setValueAt(gender, selectedRow, 2);
-                model.setValueAt(positive, selectedRow, 3);
-                btnClear.doClick();
+                if (name.isEmpty() || address.isEmpty()) {
+                    JOptionPane.showMessageDialog(buttonPanel, "Some of the fields are empty", "Error", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    model.setValueAt(name, selectedRow, 0);
+                    model.setValueAt(address, selectedRow, 1);
+                    model.setValueAt(gender, selectedRow, 2);
+                    model.setValueAt(positive, selectedRow, 3);
+                    btnClear.doClick();
+                    JOptionPane.showMessageDialog(buttonPanel, "Record at row " + selectedRow + " is updated successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
+                }
             }
         });
 
