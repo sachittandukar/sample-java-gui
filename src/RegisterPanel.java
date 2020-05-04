@@ -26,6 +26,7 @@ public class RegisterPanel extends JPanel implements AppLayout {
         btnClear = new JButton("Clear All");
         btnRegister = new JButton("Register");
         btnUpdate = new JButton("Update");
+        btnUpdate.setVisible(false);
     }
 
     @Override
@@ -101,7 +102,7 @@ public class RegisterPanel extends JPanel implements AppLayout {
         add(btnClear, gbc);
 
         gbc.gridx = 3;
-        gbc.gridy = 5;
+        gbc.gridy = 4;
         gbc.gridwidth = 1;
         gbc.fill = GridBagConstraints.NONE;
         gbc.anchor = GridBagConstraints.EAST;
