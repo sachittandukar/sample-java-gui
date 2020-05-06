@@ -2,6 +2,8 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.*;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class MyApp extends JFrame {
     JMenuBar menuBar;
@@ -9,6 +11,7 @@ public class MyApp extends JFrame {
     RegisterPanel registerPanel;
     DataPanel dataPanel;
     MyApp self = this;
+    UserRegistration reg;
 
     public MyApp() {
         setVisible(true);
@@ -19,8 +22,10 @@ public class MyApp extends JFrame {
         loginPanel = new LoginPanel();
         registerPanel = new RegisterPanel();
         dataPanel = new DataPanel();
+        reg = new UserRegistration();
         setJMenuBar(getMenu());
         add(appLayout());
+        refreshTable();
         pack();
         setLocationRelativeTo(null);
         loginEventHandlers();
@@ -83,7 +88,9 @@ public class MyApp extends JFrame {
                 if (confirm == JOptionPane.YES_OPTION) {
                     try {
                         int rowDelete = Integer.parseInt(row);
-                        dataPanel.getModel().removeRow(rowDelete - 1);
+//                        dataPanel.getModel().removeRow(rowDelete - 1);
+                        reg.delete(rowDelete);
+                        refreshTable();
                     } catch (NumberFormatException exception) {
                         JOptionPane.showMessageDialog(dataPanel, "You must enter valid number.", "Error", JOptionPane.ERROR_MESSAGE);
                     } catch (ArrayIndexOutOfBoundsException exception) {
@@ -139,8 +146,9 @@ public class MyApp extends JFrame {
                     } else if (age <= 18) {
                         JOptionPane.showMessageDialog(self, "You must be aged more than 18 years old.", "Error", JOptionPane.ERROR_MESSAGE);
                     } else {
-                        Object[] data = {model.getRowCount() + 1, firstName, lastName, username, new String(password), age, gender};
-                        model.addRow(data);
+
+                        reg.insert(firstName, lastName, username, new String(password), age, gender);
+                        refreshTable();
                         JOptionPane.showMessageDialog(self, "You have been registered", "Success", JOptionPane.INFORMATION_MESSAGE);
                         registerPanel.getBtnClear().doClick();
                     }
@@ -235,12 +243,9 @@ public class MyApp extends JFrame {
                     } else if (age <= 18) {
                         JOptionPane.showMessageDialog(self, "You must be aged more than 18 years old.", "Error", JOptionPane.ERROR_MESSAGE);
                     } else {
-                        model.setValueAt(firstName, selectedRow, 1);
-                        model.setValueAt(lastName, selectedRow, 2);
-                        model.setValueAt(username, selectedRow, 3);
-                        model.setValueAt(new String(password), selectedRow, 4);
-                        model.setValueAt(age, selectedRow, 5);
-                        model.setValueAt(gender, selectedRow, 6);
+                        int id = Integer.parseInt(model.getValueAt(selectedRow, 0).toString());
+                        reg.update(id, firstName, lastName, username, new String(password), age, gender);
+                        refreshTable();
                         JOptionPane.showMessageDialog(self, "Data of " + username + " at row " + (selectedRow + 1) + " updated successfully", "Success", JOptionPane.INFORMATION_MESSAGE);
                         registerPanel.getBtnClear().doClick();
                     }
@@ -249,6 +254,28 @@ public class MyApp extends JFrame {
                 }
             }
         });
+    }
+
+    private void refreshTable() {
+        // removes all data from JTable
+        dataPanel.getModel().setRowCount(0);
+        try {
+            ResultSet resultSet = reg.get();
+            while (resultSet.next()) {
+                dataPanel.getModel().addRow(new Object[]{
+                        resultSet.getInt("id"),
+                        resultSet.getString("first_name"),
+                        resultSet.getString("last_name"),
+                        resultSet.getString("username"),
+                        resultSet.getString("password"),
+                        resultSet.getInt("age"),
+                        resultSet.getString("gender"),
+                });
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
     }
 
     public static void main(String[] args) {
