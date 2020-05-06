@@ -72,8 +72,31 @@ public class MyApp extends JFrame {
             }
         });
 
+        JMenuItem deleteMenu = new JMenuItem("Delete");
+
+        deleteMenu.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_D, KeyEvent.CTRL_DOWN_MASK));
+        deleteMenu.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String row = JOptionPane.showInputDialog(dataPanel, "Please enter id number to delete?", "Queries", JOptionPane.QUESTION_MESSAGE);
+                int confirm = JOptionPane.showConfirmDialog(dataPanel, "Are you sure want to delete row?", "Warning", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+                if (confirm == JOptionPane.YES_OPTION) {
+                    try {
+                        int rowDelete = Integer.parseInt(row);
+                        dataPanel.getModel().removeRow(rowDelete - 1);
+                    } catch (NumberFormatException exception) {
+                        JOptionPane.showMessageDialog(dataPanel, "You must enter valid number.", "Error", JOptionPane.ERROR_MESSAGE);
+                    } catch (ArrayIndexOutOfBoundsException exception) {
+                        JOptionPane.showMessageDialog(dataPanel, "Provided row doesn't exist. Please enter valid row number.", "Error", JOptionPane.ERROR_MESSAGE);
+                    }
+
+                }
+            }
+        });
+
         fileMenu.add(subNew);
         fileMenu.add(subPrint);
+        fileMenu.add(deleteMenu);
         fileMenu.addSeparator();
         fileMenu.add(subClose);
 
